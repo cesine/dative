@@ -113,7 +113,7 @@ module.exports = (grunt) ->
       # I'm just cleaning it up hackily like so.
       postdist: ['<%= yeoman.dist %>/bower_components']
 
-    jshint: 
+    jshint:
       options:
         jshintrc: '.jshintrc'
         reporter: require('jshint-stylish')
@@ -265,7 +265,7 @@ module.exports = (grunt) ->
 
     useminPrepare:
       html: '<%= yeoman.app %>/index.html'
-      options: 
+      options:
         dest: '<%= yeoman.dist %>'
         # Next 5 lines from http://stackoverflow.com/questions/20509145/managing-images-in-bower-packages-using-grunt?lq=1
         # "Next, the flow configuration tells usemin to skip the concat step for
@@ -281,7 +281,7 @@ module.exports = (grunt) ->
     usemin:
       html: ['<%= yeoman.dist %>/{,*/}*.html']
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css']
-      options: 
+      options:
         dirs: ['<%= yeoman.dist %>']
 
     imagemin:
@@ -584,4 +584,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'lint', 'coffeelint'
 
   grunt.registerTask 'docs', ['clean:docs', 'clean:doctmp', 'copy:docco', 'docco', 'clean:doctmp']
+
+  grunt.registerTask 'deploy', ['jshint']
 
