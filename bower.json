@@ -19,11 +19,13 @@
     "jakobmattsson-jquery-elastic": "*",
     "better-elastic-textarea": "*",
     "spin.js": "*",
-    "perfect-scrollbar": "*",
-    "fielddb": "~2.0.2"
+    "perfect-scrollbar": "*"
   },
   "devDependencies": {
     "mocha": "*",
     "chai": "*"
+  },
+  "resolutions": {
+    "jquery": "~2.1.1"
   }
 }
