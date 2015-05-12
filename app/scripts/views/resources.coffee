@@ -221,12 +221,13 @@ define [
       @refreshPaginationMenuTop()
 
       # 3. If the new resource should be displayed on the current page, then
-      # do that.
+      # do that; otherwise notify the user that it's on the last page.
       Backbone.trigger "add#{@resourceNameCapitalized}Success", resourceModel
       if newResourceShouldBeOnCurrentPage
         @addNewResourceViewToPage()
         @closeNewResourceView()
       else
+        @notifyNewResourceOnLastPage resourceModel
         @closeNewResourceView()
 
       # 4. create a new new resource widget but don't display it.
@@ -236,6 +237,9 @@ define [
       @renderNewResourceView()
       @newResourceViewVisibility()
       @listenToNewResourceView()
+
+    notifyNewResourceOnLastPage: (resourceModel) ->
+      Backbone.trigger 'newResourceOnLastPage', resourceModel, @resourceName
 
     destroyResourceSuccess: (resourceModel) ->
       @collection.remove resourceModel
@@ -638,12 +642,13 @@ define [
       @setNewResourceViewButtonState()
       if @paginator.start is @paginator.end
         @$('.resource-range')
-          .text "#{@resourceName} #{@utils.integerWithCommas(@paginator.start + 1)}"
+          .text("#{@utils.camel2regular @resourceName}
+            #{@utils.integerWithCommas(@paginator.start + 1)}")
       else
-        @$('.resource-range').text "#{@resourceNamePlural}
+        @$('.resource-range').text("#{@utils.camel2regular @resourceNamePlural}
           #{@utils.integerWithCommas(@paginator.start + 1)}
           to
-          #{@utils.integerWithCommas(@paginator.end + 1)}"
+          #{@utils.integerWithCommas(@paginator.end + 1)}")
       @$('.resource-count').text @utils.integerWithCommas(@paginator.items)
       @$('.resource-count-noun').text(
         @utils.pluralizeByNum(@resourceName, @paginator.items))
@@ -1008,6 +1013,7 @@ define [
       for attribute in editableAttributes
         delete defaults[attribute]
       newResourceModel.set defaults
+      newResourceModel.collection = @collection
 
       # TODO: if the current New Resource view has a non-empty model we should
       # either warn the user about that or we should intelligently store that
