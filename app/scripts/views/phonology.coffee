@@ -1,10 +1,14 @@
 define [
   './resource'
+  './phonology-controls'
   './phonology-add-widget'
   './person-field-display'
   './date-field-display'
-], (ResourceView, PhonologyAddWidgetView, PersonFieldDisplayView,
-  DateFieldDisplayView) ->
+  './boolean-icon-display'
+  './script-display'
+], (ResourceView, PhonologyControlsView, PhonologyAddWidgetView,
+  PersonFieldDisplayView, DateFieldDisplayView, BooleanIconFieldDisplayView,
+  ScriptFieldDisplayView) ->
 
   # Phonology View
   # --------------
@@ -14,6 +18,23 @@ define [
   class PhonologyView extends ResourceView
 
     resourceName: 'phonology'
+
+    keydown: (event) ->
+      super event
+      switch event.which
+        when 67
+          if not @addUpdateResourceWidgetHasFocus()
+            @$('button.compile').click()
+        when 82
+          if not @addUpdateResourceWidgetHasFocus()
+            @$('button.run-tests').click()
+        when 191
+          if not @addUpdateResourceWidgetHasFocus()
+            @$('textarea[name=apply-down]').first().focus()
+
+    excludedActions: ['history']
+
+    controlsViewClass: PhonologyControlsView
 
     resourceAddWidgetView: PhonologyAddWidgetView
 
@@ -25,7 +46,6 @@ define [
 
     # Attributes that may be hidden.
     secondaryAttributes: [
-      'script'
       'compile_succeeded'
       'compile_message'
       'compile_attempt'
@@ -35,6 +55,7 @@ define [
       'datetime_modified'
       'UUID'
       'id'
+      'script'
     ]
 
     # Map attribute names to display view class names.
@@ -43,4 +64,6 @@ define [
       modifier: PersonFieldDisplayView
       datetime_entered: DateFieldDisplayView
       datetime_modified: DateFieldDisplayView
+      compile_succeeded: BooleanIconFieldDisplayView
+      script: ScriptFieldDisplayView
 

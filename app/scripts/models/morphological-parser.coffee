@@ -105,3 +105,35 @@ define ['./resource'], (ResourceModel) ->
       'language_model'
     ]
 
+    # Request a parse for a word.
+    # PUT `<URL>/morphologicalparsers/<id>/parse`
+    parse: (words) ->
+      @trigger "parseStart"
+      @constructor.cors.request(
+        method: 'PUT'
+        url: "#{@getOLDURL()}/morphologicalparsers/#{@get 'id'}/parse"
+        payload: @getParsePayload words
+        onload: (responseJSON, xhr) =>
+          @trigger "parseEnd"
+          if xhr.status is 200
+            @trigger "parseSuccess", responseJSON
+          else
+            error = responseJSON.error or 'No error message provided.'
+            @trigger "parseFail", error
+            console.log "PUT request to
+              #{@getOLDURL()}/morphologicalparsers/#{@get 'id'}/parse
+              failed (status not 200)."
+            console.log error
+        onerror: (responseJSON) =>
+          @trigger "parseEnd"
+          error = responseJSON.error or 'No error message provided.'
+          @trigger "parseFail", error
+          console.log "Error in PUT request to
+            #{@getOLDURL()}/morphologicalparsers/#{@get 'id'}/parse
+            (onerror triggered)."
+      )
+
+    getParsePayload: (words) ->
+      {transcriptions: words.split(/\s+/)}
+
+

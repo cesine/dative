@@ -34,6 +34,10 @@ define [
       dative-paginated-item dative-widget-center ui-widget ui-widget-content
       ui-corner-all'
 
+    # Since this will be called from within templates, the `=>` is necessary.
+    resourceNameHumanReadable: =>
+      @utils.camel2regular @resourceName
+
     initialize: (options) ->
       @resourceNameCapitalized = @utils.capitalize @resourceName
       @resourceNamePlural = @utils.pluralize @resourceName
@@ -47,12 +51,20 @@ define [
         model: @model,
         addUpdateType: @addUpdateType
       @updateViewRendered = false
+      if 'controls' not in @excludedActions
+        @controlsView = new @controlsViewClass(model: @model)
+        @controlsViewRendered = false
 
     # An array of actions that are not relevant to this resource, e.g.,
-    # 'update', 'delete', 'export', 'history'.
+    # 'history', and 'controls'.
+    # WARN: if you remove 'controls' from this array, then you MUST assign
+    # a working "controls" view to `@controlsViewClass`.
     excludedActions: [
       'history'
+      'controls'
     ]
+
+    controlsViewClass: null
 
     getUpdateViewType: -> if @model.get('id') then 'update' else 'add'
 
@@ -72,6 +84,7 @@ define [
         headerTitleAttribute: 'name' # the attribute of the model that should be displayed in the header center.
         secondaryDataVisible: false # comments, tags, etc.
         updateViewVisible: false
+        controlsViewVisible: false
       _.extend defaults, options
       for key, value of defaults
         @[key] = value
@@ -109,6 +122,9 @@ define [
       @listenTo @updateView, 'forceModelChanged', @indicateModelState
       @listenTo @model, "update#{@resourceNameCapitalized}Success",
         @indicateModelIsUnaltered
+      if 'controls' not in @excludedActions
+        @listenTo @controlsView, "controlsView:hide",
+          @hideControlsViewAnimate
 
     indicateModelState: ->
       if @updateView.modelAltered()
@@ -142,6 +158,7 @@ define [
       'click .duplicate-resource': 'duplicate'
       'click .delete-resource': 'deleteConfirm'
       'click .export-resource': 'exportResource'
+      'click .controls': 'toggleControlsViewAnimate'
 
     exportResource: (event) ->
       if event then @stopEvent event
@@ -214,8 +231,6 @@ define [
       attribute: attribute # e.g., "name"
       model: @model
 
-    resourceNameHumanReadable: -> @resourceName
-
     html: ->
       @$el
         .attr 'tabindex', 0
@@ -242,7 +257,7 @@ define [
       name = @model.get 'name'
       id = @model.get 'id'
       if name
-        truncatedName = name[0..40]
+        truncatedName = name[0..35]
         if truncatedName isnt name then name = "#{truncatedName}..."
       else
         name = ''
@@ -279,6 +294,8 @@ define [
       @headerVisibility()
       @secondaryDataVisibility()
       @updateViewVisibility()
+      if 'controls' not in @excludedActions
+        @controlsViewVisibility()
 
     # Make the header visible, or not, depending on state.
     headerVisibility: ->
@@ -479,8 +496,11 @@ define [
     expand: ->
       # ResourcesView listens for this once in order to scroll to the correct
       # place.
-      @showSecondaryDataEvent = "#{@resourceName}:#{@resourceName}Expanded"
+      @showSecondaryDataEvent = @getShowSecondaryDataEvent()
       @showFullAnimate()
+
+    getShowSecondaryDataEvent: ->
+      "#{@resourceName}:#{@resourceName}Expanded"
 
     # Collapse the resource view: hide buttons and secondary data.
     collapse: ->
@@ -545,6 +565,10 @@ define [
         when 69 # "e" for "export"
           if not @addUpdateResourceWidgetHasFocus()
             @$('.export-resource').first().click()
+        when 88 # "x" for "eXtra actions (i.e., controls)"
+          if not @addUpdateResourceWidgetHasFocus()
+            @$('.controls').first().click()
+
 
     ############################################################################
     # Hide & Show stuff
@@ -685,11 +709,14 @@ define [
         @showUpdateView()
 
     showUpdateViewAnimate: ->
+      @spin()
       if not @updateViewRendered then @renderUpdateView()
       @updateViewVisible = true
       @setUpdateButtonStateOpen()
       @$('.update-resource-widget').first().slideDown
         complete: =>
+          @showSecondaryDataEvent = @getShowSecondaryDataEvent()
+          @listenToOnce Backbone, @getShowSecondaryDataEvent(), @stopSpin
           @showFullAnimate()
           Backbone.trigger "add#{@resourceNameCapitalized}WidgetVisible"
           @focusFirstUpdateViewTextarea()
@@ -803,10 +830,79 @@ define [
       options = super
       options.top = '50%'
       options.left = '-15%'
-      options.color = @constructor.jQueryUIColors().errCo
+      # options.color = @constructor.jQueryUIColors().errCo
+      options.color = @constructor.jQueryUIColors().defCo
       options
 
     spin: -> @$('.spinner-container').spin @spinnerOptions()
 
     stopSpin: -> @$('.spinner-container').spin false
+
+
+    # Controls View
+    ############################################################################
+
+    # Make the controls view visible, or not, depending on state.
+    controlsViewVisibility: ->
+      if @controlsViewVisible
+        @showControlsView()
+      else
+        @hideControlsView()
+
+    setControlsButtonStateOpen: -> @$('.controls').button 'disable'
+
+    setControlsButtonStateClosed: -> @$('.controls').button 'enable'
+
+    # Render the controls view.
+    renderControlsView: ->
+      @controlsView.setElement @$('.controls-widget').first()
+      @controlsView.render()
+      @controlsViewRendered = true
+      @rendered @controlsView
+
+    showControlsView: ->
+      if not @controlsViewRendered then @renderControlsView()
+      @controlsViewVisible = true
+      @setControlsButtonStateOpen()
+      @$('.controls-widget').first().show
+        complete: =>
+          @showFull()
+          Backbone.trigger "add#{@resourceNameCapitalized}WidgetVisible"
+          @focusFirstControlsViewTextarea()
+
+    hideControlsView: ->
+      @controlsViewVisible = false
+      @setControlsButtonStateClosed()
+      @$('.controls-widget').first().hide()
+
+    toggleControlsView: ->
+      if @controlsViewVisible
+        @hideControlsView()
+      else
+        @showControlsView()
+
+    showControlsViewAnimate: ->
+      if not @controlsViewRendered then @renderControlsView()
+      @controlsViewVisible = true
+      @setControlsButtonStateOpen()
+      @$('.controls-widget').first().slideDown
+        complete: =>
+          @showFullAnimate()
+          Backbone.trigger "showControlsViewVisible"
+          @focusFirstControlsViewTextarea()
+
+    focusFirstControlsViewTextarea: ->
+      @$('.controls-widget textarea').first().focus()
+
+    hideControlsViewAnimate: ->
+      @controlsViewVisible = false
+      @setControlsButtonStateClosed()
+      @$('.controls-widget').first().slideUp
+        complete: => @$el.focus()
+
+    toggleControlsViewAnimate: ->
+      if @controlsViewVisible
+        @hideControlsViewAnimate()
+      else
+        @showControlsViewAnimate()
 

@@ -120,9 +120,12 @@ button.help-button
 #dative-page-header select+div {
     margin: 1px;
 }
+
 .dative-page-header-title {
-    font-size: 13px;
+    /*font-size: 13px;*/
+    font-size: 125%;
 }
+
 .dative-forms-actions {
     text-align: left;
     margin-top: 5px;
@@ -162,6 +165,19 @@ button.help-button
   margin-right: 0.75em;
 }
 
+.dative-field-label-container.top,
+.dative-field-display-label-container.top
+{
+  display: block !important;
+}
+
+.dative-field-label-container.top label,
+.dative-field-display-label-container.top label
+{
+  text-align: left;
+  margin-bottom: 0.5em;
+}
+
 .dative-form-object .dative-field-display-label-container
 {
   width: 40%;
@@ -196,11 +212,37 @@ button.help-button
   margin-bottom: 0.4em;
 }
 
+.dative-field-display-representation-container
+{
+  overflow-x: scroll;
+}
+
 .dative-field-display-representation-container,
 .dative-field-input-container
 {
   display: inline-block;
   width: 70%;
+}
+
+.update-widget .dative-field-input-container.full-width,
+.dative-field-input-container.full-width,
+.dative-field-display-representation-container.full-width
+{
+  display: block;
+  width: 96%;
+  margin: 0.5em auto;
+}
+
+.dative-field-display-representation-container.script
+{
+  border: solid 1px;
+  border-radius: 4px;
+}
+
+.update-widget .dative-field-input-container.full-width textarea,
+.dative-field-input-container.full-widt textarea
+{
+  overflow: scroll;
 }
 
 .dative-form-object .dative-field-display-representation-container
@@ -1117,6 +1159,7 @@ ul.fieldset select[name="elicitor"],
 ul.fieldset select[name="verifier"],
 ul.fieldset select[name="source"],
 .dative-help-dialog input[type="text"],
+textarea.control-input,
 div.dative-display
 {
     border-style: solid;
@@ -1154,9 +1197,9 @@ div.dative-display
 
 .dative-help-dialog .help-content-container
 {
-  margin-right: -1em;
+  margin-right: -2em;
   padding-bottom: 5em;
-  overflow: hidden;
+  overflow: scroll;
   height: 85%;
   position: relative;
 }
@@ -1326,6 +1369,7 @@ p.paragraph-widget
 {
   line-height: 1.5em;
   font-size: 110%;
+  max-width: 20%;
 }
 
 .form-add-form ul.fieldset textarea,
@@ -1337,6 +1381,7 @@ p.paragraph-widget
 .linguistic-data-entry-form ul.fieldset input,
 .linguistic-data-entry-form ul.fieldset .ui-selectmenu-button,
 .linguistic-data-entry-form ul.fieldset label,
+textarea.control-input,
 .dative-exporter-dialog-container
 {
   font-size: 12pt;
@@ -1346,7 +1391,8 @@ p.paragraph-widget
 .form-add-form ul.fieldset textarea,
 .form-add-form ul.fieldset input,
 .linguistic-data-entry-form ul.fieldset textarea,
-.linguistic-data-entry-form ul.fieldset input
+.linguistic-data-entry-form ul.fieldset input,
+textarea.control-input
 {
   min-height: 1.5em;
 }
@@ -1402,7 +1448,8 @@ div.dative-new-item .dative-widget-center
 div.dative-paginated-item .dative-widget-header-title,
 div.dative-new-item .dative-widget-header-title
 {
-  font-size: 115%;
+  /*font-size: 115%;*/
+  font-size: 125%;
 }
 
 .small-caps
@@ -1426,12 +1473,24 @@ div.script
 {
   white-space: pre;
   overflow-x: scroll;
+  max-height: 40em;
+  min-height: 25em;
+  height: 25em;
+  padding: 0.2em;
+  font-family: monospace;
+  font-size: 10.5pt;
 }
 
-textarea.script
+textarea.script,
+.resource-add-form ul.fieldset textarea.script
 {
   white-space: nowrap;
   overflow-x: scroll;
+
+  font-size: 9.5pt;
+  font-family: monospace;
+  min-width: 95%;
+  max-width: 95%;
 }
 
 .diffed
@@ -1453,5 +1512,174 @@ td.igt-word-cell
 table.igt-table tr td
 {
   padding-bottom: 0.25em;
+}
+
+button.align-top
+{
+  vertical-align: top;
+}
+
+.control-input
+{
+  width: 80%;
+  max-width: 80%;
+  min-width: 80%;
+}
+
+i.boolean-icon
+{
+  font-family: FontAwesome;
+}
+
+i.boolean-icon.false
+{
+  color: red;
+}
+
+i.boolean-icon.true
+{
+  color: green;
+}
+
+.io-results-table
+{
+  margin: 0.5em 2em 2em 2em;
+}
+
+.io-results-table td,
+.io-results-table th
+{
+  padding: 0.25em;
+  font-size: 12pt;
+  text-align: left;
+}
+
+.io-results-table th
+{
+  font-weight: bold;
+  max-width: 23%;
+  min-width: 23%;
+  width: 23%;
+}
+
+.io-results-table tr.even td
+{
+  background-color: white;
+}
+
+.nowrap
+{
+  white-space: nowrap;
+}
+
+ul.fieldset .script-textarea,
+.script-textarea
+{
+  height: 25em;
+  min-height: 25em;
+  max-height: 40em;
+  white-space: normal;
+}
+
+.run-tests-results
+{
+  display: block;
+  max-width: 100%;
+  max-height: 300px;
+  overflow: scroll;
+  margin: 0.5em auto;
+  border: 1px solid;
+  border-radius: 4px;
+}
+
+.run-tests-summary
+{
+  display: inline-block;
+  font-size: 12pt;
+}
+
+.button-control-button
+{
+  vertical-align: top;
+}
+
+.button-control-summary
+{
+  display: inline-block;
+  max-width: 80%;
+  font-size: 12pt;
+  overflow-x: scroll;
+  margin-top: 0.25em;
+}
+
+span.match
+{
+  font-weight: bold;
+}
+
+.dative-field-display div.search
+{
+  white-space: pre;
+}
+
+.dative-field-input-container div.search
+{
+  overflow: scroll;
+  min-width: 100%;
+  max-width: 100%;
+  max-height: 40em;
+  padding-bottom: 3em;
+}
+
+div.search table td
+{
+  padding: 0.5em;
+}
+
+td.middle-cell
+{
+  vertical-align: middle;
+}
+
+div.scoped-cell,
+div.filter-expression-operand-array
+{
+  border-left: 2px solid black;
+  border-radius: 15px;
+}
+
+div.filter-expression-operator,
+div.filter-expression-operand,
+div.filter-expression
+{
+  white-space: nowrap;
+  /*border: 1px solid black;*/
+}
+
+div.operand select,
+div.operand textarea,
+div.filter-expression-operand select,
+div.filter-expression-operand textarea
+{
+  vertical-align: middle;
+}
+
+div.filter-expression-action-widget-container
+{
+  position: relative;
+}
+
+div.filter-expression-action-widget
+{
+  position: absolute;
+  white-space: nowrap;
+  z-index: 999;
+  padding: 0.25em;
+  border: 1px solid;
+}
+
+table.filter-expression-table
+{
+  /*border: 1px solid green;*/
 }
 

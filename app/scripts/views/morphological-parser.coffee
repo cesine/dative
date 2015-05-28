@@ -1,11 +1,15 @@
 define [
   './resource'
+  './morphological-parser-controls'
   './morphological-parser-add-widget'
   './person-field-display'
   './date-field-display'
   './object-with-name-field-display'
-], (ResourceView, MorphologicalParserAddWidgetView, PersonFieldDisplayView,
-  DateFieldDisplayView, ObjectWithNameFieldDisplayView) ->
+  './boolean-icon-display'
+], (ResourceView, MorphologicalParserControlsView,
+  MorphologicalParserAddWidgetView, PersonFieldDisplayView,
+  DateFieldDisplayView, ObjectWithNameFieldDisplayView,
+  BooleanIconFieldDisplayView) ->
 
   # Morphological Parser View
   # -------------------------
@@ -16,10 +20,9 @@ define [
 
     resourceName: 'morphologicalParser'
 
-    initialize: (options) ->
-      super options
-      @resourceNameHumanReadable = =>
-        @utils.camel2regular @resourceName
+    excludedActions: ['history']
+
+    controlsViewClass: MorphologicalParserControlsView
 
     resourceAddWidgetView: MorphologicalParserAddWidgetView
 
@@ -58,4 +61,7 @@ define [
       phonology: ObjectWithNameFieldDisplayView
       morphology: ObjectWithNameFieldDisplayView
       language_model: ObjectWithNameFieldDisplayView
+      generate_succeeded: BooleanIconFieldDisplayView
+      compile_succeeded: BooleanIconFieldDisplayView
+
 

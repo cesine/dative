@@ -99,7 +99,39 @@ define [
     # `@serverSideResourceName`, as is necessary with OLD "corpora" which are
     # called "subcorpora" in Dative.
     getServerSideResourceName: ->
-      @serverSideResourceName or @resourceNamePlural
+      @serverSideResourceName or @resourceNamePlural.toLowerCase()
+
+    # Fetch a resource by id.
+    # GET `<URL>/<resource_name_plural>/<resource.id>`
+    fetchResource: (id) ->
+      @trigger "fetch#{@resourceNameCapitalized}Start"
+      @constructor.cors.request(
+        method: 'GET'
+        url: @getFetchResourceURL id
+        onload: (responseJSON, xhr) =>
+          @fetchResourceOnloadHandler responseJSON, xhr
+        onerror: (responseJSON) =>
+          @trigger "fetch#{@resourceNameCapitalized}End"
+          error = responseJSON.error or 'No error message provided.'
+          @trigger "fetch#{@resourceNameCapitalized}Fail", error
+          console.log "Error in DELETE request to
+            /#{@getServerSideResourceName()}/#{@get 'id'} (onerror triggered)."
+      )
+
+    # The type of URL used to fetch a resource on an OLD backend.
+    getFetchResourceURL: (id) ->
+      "#{@getOLDURL()}/#{@getServerSideResourceName()}/#{id}"
+
+    fetchResourceOnloadHandler: (responseJSON, xhr) ->
+      @trigger "fetch#{@resourceNameCapitalized}End"
+      if xhr.status is 200
+        @trigger "fetch#{@resourceNameCapitalized}Success", responseJSON
+      else
+        error = responseJSON.error or 'No error message provided.'
+        @trigger "fetch#{@resourceNameCapitalized}Fail", error
+        console.log "GET request to /#{@getServerSideResourceName()}/#{@get 'id'}
+          failed (status not 200)."
+        console.log error
 
     # Issue a GET request to /<resource_name_plural>/new on the active OLD
     # server. In the OLD API, this type of request returns a JSON object
@@ -124,6 +156,31 @@ define [
             "Error in GET request to OLD server for /#{@getServerSideResourceName()}/new"
           console.log "Error in GET request to OLD server for
             /#{@getServerSideResourceName()}/new"
+      )
+
+    # Issue a GET request to /<resource_name_plural>/new_search on the active OLD
+    # server. In the OLD API, this type of request returns a JSON object
+    # containing the data necessary to create a new OLD search over that resource.
+    getNewSearchData: ->
+      Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataStart"
+      @constructor.cors.request(
+        method: 'GET'
+        url: "#{@getOLDURL()}/#{@getServerSideResourceName()}/new_search"
+        onload: (responseJSON, xhr) =>
+          Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataEnd"
+          if xhr.status is 200
+            Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataSuccess",
+              responseJSON
+          else
+            Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataSuccess",
+              "Failed in fetching the data required to create a new search over
+                #{@resourceNamePlural}."
+        onerror: (responseJSON) =>
+          Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataEnd"
+          Backbone.trigger "getNew#{@resourceNameCapitalized}SearchDataFail",
+            "Error in GET request to OLD server for /#{@getServerSideResourceName()}/new_search"
+          console.log "Error in GET request to OLD server for
+            /#{@getServerSideResourceName()}/new_search"
       )
 
     # Destroy a resource.
@@ -166,4 +223,31 @@ define [
     # The JSON payload for destroying a resource; the OLD doesn't use this, but
     # FieldDB crucially does.
     getDestroyResourcePayload: -> null
+
+    # Perform a "generate and compile" request.
+    # PUT `<URL>/morphologicalparsers/{id}/generate_and_compile`
+    generateAndCompile: ->
+      @trigger "generateAndCompileStart"
+      @constructor.cors.request(
+        method: 'PUT'
+        url: "#{@getOLDURL()}/#{@getServerSideResourceName()}/#{@get 'id'}/generate_and_compile"
+        onload: (responseJSON, xhr) =>
+          @trigger "generateAndCompileEnd"
+          if xhr.status is 200
+            @trigger "generateAndCompileSuccess", responseJSON
+          else
+            error = responseJSON.error or 'No error message provided.'
+            @trigger "generateAndCompileFail", error
+            console.log "PUT request to
+              #{@getOLDURL()}/#{@getServerSideResourceName()}/#{@get 'id'}/generate_and_compile
+              failed (status not 200)."
+            console.log error
+        onerror: (responseJSON) =>
+          @trigger "generateAndCompileEnd"
+          error = responseJSON.error or 'No error message provided.'
+          @trigger "generateAndCompileFail", error
+          console.log "Error in PUT request to
+            #{@getOLDURL()}/#{@getServerSideResourceName()}/#{@get 'id'}/generate_and_compile
+            (onerror triggered)."
+      )
 

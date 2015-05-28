@@ -1,0 +1,106 @@
+<table class='filter-expression-table'>
+    <tr>
+
+        <% if @filterExpression[0] in ['and', 'or', 'not']: %>
+            <% buttonText = @filterExpression[0] %>
+        <% else: %>
+            <% buttonText = '<i class="fa fa-ellipsis-h"></i>' %>
+        <% end %>
+
+        <td class='middle-cell'>
+            <div class='operator'>
+                <button class='operator'><%- buttonText %></button>
+                <div class='filter-expression-action-widget-container'>
+                    <div class='filter-expression-action-widget ui-corner-all'>
+                        <button class='make-and dative-tooltip'
+                                title='transform this to “and”, i.e., to a
+                                    conjunction of search
+                                    expressions.'>and</button>
+                        <button class='make-or dative-tooltip'
+                                title='transform this to “or”, i.e., to a
+                                    disjunction of search
+                                    expressions.'>or</button>
+                        <button class='make-not dative-tooltip'
+                                title='negate this search
+                                    expression'>not</button>
+                        <!-- <button class='make- dative-tooltip'
+                            ><i class='fa fa-ellipsis-h'></i></button> -->
+                        <button class='add-coordinand dative-tooltip'
+                                title='add another search expression beneath
+                                    this one'><i class='fa fa-plus'
+                                    ></i></button>
+                        <button class='destroy dative-tooltip'
+                                title='destroy this search expression'
+                            ><i class='fa fa-times'></i></button>
+                    </div>
+                </div>
+            </div>
+        </td>
+
+        <td>
+            <% if @filterExpression[0] in ['and', 'or']: %>
+                <% operandClass = 'filter-expression-operand filter-expression-operand-array' %>
+            <% else: %>
+                <% operandClass = 'filter-expression-operand' %>
+            <% end %>
+
+            <div class='<%= operandClass %>'>
+
+                <% if @filterExpression.length > 3: %>
+
+                    <% if @filterExpression.length is 5: %>
+                        <% [myModel, myAttribute, mySubattribute, myRelation, myValue] = @filterExpression %>
+                    <% else: %>
+                        <% [myModel, myAttribute, myRelation, myValue] = @filterExpression %>
+                    <% end %>
+
+                    <select name='attribute' class='attribute' tabindex='0'>
+                        <% for attribute in @attributes: %>
+                            <% if attribute is myAttribute: %>
+                                <option value='<%= attribute %>' selected
+                                    ><%= @snake2regular attribute %></option>
+                            <% else: %>
+                                <option value='<%= attribute %>'
+                                    ><%= @snake2regular attribute %></option>
+                            <% end %>
+                        <% end %>
+                    </select>
+
+                    <% if @filterExpression.length is 5: %>
+                        <select name='sub-attribute' class='sub-attribute' tabindex='0'>
+                            <% for attribute in @subattributes[myAttribute] or []: %>
+                                <% if attribute is mySubattribute: %>
+                                    <option value='<%= attribute %>' selected
+                                        ><%= @snake2regular attribute %></option>
+                                <% else: %>
+                                    <option value='<%= attribute %>'
+                                        ><%= @snake2regular attribute %></option>
+                                <% end %>
+                            <% end %>
+                        </select>
+                    <% end %>
+
+                    <select name='relation' class='relation' tabindex='0'>
+                        <% for relation in @relations: %>
+                            <% if relation is myRelation: %>
+                                <option value='<%= relation %>' selected
+                                    ><%= relation %></option>
+                            <% else: %>
+                                <option value='<%= relation %>'
+                                    ><%= relation %></option>
+                            <% end %>
+                        <% end %>
+                    </select>
+
+                    <textarea name='value' name='value' class='value ui-corner-all'
+                        tabindex='0'><%= myValue %></textarea>
+
+                <% end %>
+
+            </div>
+
+        </td>
+
+    </tr>
+</table>
+

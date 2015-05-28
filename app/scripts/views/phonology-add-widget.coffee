@@ -1,8 +1,10 @@
 define [
   './resource-add-widget'
   './textarea-field'
+  './script-field'
   './../models/phonology'
-], (ResourceAddWidgetView, TextareaFieldView, PhonologyModel) ->
+], (ResourceAddWidgetView, TextareaFieldView, ScriptFieldView,
+  PhonologyModel) ->
 
   # Phonology Add Widget View
   # -------------------------
@@ -32,13 +34,21 @@ define [
 
     attribute2fieldView:
       name: TextareaFieldView255
+      script: ScriptFieldView
 
     primaryAttributes: [
       'name'
       'description'
-    ]
-
-    editableSecondaryAttributes: [
       'script'
     ]
+
+    editableSecondaryAttributes: []
+
+    # It is crucial that we remove any U+00a0 characters from the script.
+    setToModel: ->
+      super
+      newValue = @model.get('script')
+        .replace(/\u00a0/g, '')
+        .replace(/\u000d/g, '')
+      @model.set 'script', newValue
 

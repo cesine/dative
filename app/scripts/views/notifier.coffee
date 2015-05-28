@@ -42,9 +42,33 @@ define [
       @listenTo Backbone, 'register:success', @registerSuccess
 
       @listenTo Backbone, 'fetchHistoryFormFail', @fetchHistoryFormFail
-      @listenTo Backbone, 'fetchHistoryFormFailNoHistory', @fetchHistoryFormFailNoHistory
+      @listenTo Backbone, 'fetchHistoryFormFailNoHistory',
+        @fetchHistoryFormFailNoHistory
 
       @listenTo Backbone, 'newResourceOnLastPage', @newResourceOnLastPage
+
+      @listenTo Backbone, 'morphologicalParseFail', @morphologicalParseFail
+      @listenTo Backbone, 'morphologicalParseSuccess',
+        @morphologicalParseSuccess
+      @listenTo Backbone, 'morphologicalParserGenerateAndCompileFail',
+        @morphologicalParserGenerateAndCompileFail
+      @listenTo Backbone, 'morphologicalParserGenerateAndCompileSuccess',
+        @morphologicalParserGenerateAndCompileSuccess
+
+      @listenTo Backbone, 'phonologyApplyDownFail', @phonologyApplyDownFail
+      @listenTo Backbone, 'phonologyApplyDownSuccess',
+        @phonologyApplyDownSuccess
+      @listenTo Backbone, 'phonologyCompileFail', @phonologyCompileFail
+      @listenTo Backbone, 'phonologyCompileSuccess', @phonologyCompileSuccess
+      @listenTo Backbone, 'phonologyRunTestsFail', @phonologyRunTestsFail
+      @listenTo Backbone, 'phonologyRunTestsSuccess', @phonologyRunTestsSuccess
+      @listenTo Backbone, 'phonologyServeCompiledFail', @phonologyServeCompiledFail
+      @listenTo Backbone, 'phonologyServeCompiledSuccess', @phonologyServeCompiledSuccess
+
+      @listenTo Backbone, 'morphologyGenerateAndCompileFail', @morphologyGenerateAndCompileFail
+      @listenTo Backbone, 'morphologyCompileFail', @morphologyCompileFail
+      @listenTo Backbone, 'morphologyCompileSuccess', @morphologyCompileSuccess
+
       @listenToCRUDResources()
 
     listenToCRUDResources: ->
@@ -273,6 +297,121 @@ define [
         title: "New #{resourceName} on last page"
         content: "The #{resourceName} that you just created can be viewed on the last page"
         type: 'warning'
+      @renderNotification notification
+
+    morphologicalParseFail: (error, parserId) ->
+      notification = new NotificationView
+        title: "Parse fail"
+        content: "Your attempt to parse using morphological parser #{parserId}
+          failed: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    morphologicalParseSuccess: (parserId) ->
+      notification = new NotificationView
+        title: "Parse success"
+        content: "Your attempt to parse using morphological parser #{parserId}
+          was successful; see the parses below the word input field."
+      @renderNotification notification
+
+    morphologicalParserGenerateAndCompileFail: (error, parserId) ->
+      notification = new NotificationView
+        title: "Parser generate and compile fail"
+        content: "Your attempt to generate and compile parser #{parserId}
+          failed: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    morphologicalParserGenerateAndCompileSuccess: (parserId) ->
+      notification = new NotificationView
+        title: "Parser generate and compile success"
+        content: "Your attempt to generate and compile the morphological parser
+          #{parserId} was successful"
+      @renderNotification notification
+
+    phonologyCompileFail: (error, phonologyId) ->
+      notification = new NotificationView
+        title: "Phonology compile fail"
+        content: "Your attempt to compile phonology #{phonologyId}
+          failed: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    phonologyCompileSuccess: (message, phonologyId) ->
+      notification = new NotificationView
+        title: "Phonology compile success"
+        content: "Your attempt to compile phonology #{phonologyId} was
+          successful: #{message}"
+      @renderNotification notification
+
+    phonologyApplyDownFail: (error, phonologyId) ->
+      notification = new NotificationView
+        title: "Phonologize fail"
+        content: "Your attempt to phonologize using phonology #{phonologyId}
+          failed: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    phonologyApplyDownSuccess: (phonologyId) ->
+      notification = new NotificationView
+        title: "Phonologize success"
+        content: "Your attempt to phonologize using phonology #{phonologyId}
+          was successful; see the surface forms below the word input field."
+      @renderNotification notification
+
+    phonologyRunTestsFail: (error, phonologyId) ->
+      notification = new NotificationView
+        title: "Run tests fail"
+        content: "Your attempt to run the tests of phonology #{phonologyId}
+          was not successful: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    phonologyRunTestsSuccess: (phonologyId) ->
+      notification = new NotificationView
+        title: "Run tests success"
+        content: "Your attempt to run the tests of phonology #{phonologyId}
+          was successful; see the results in the table below the “Run
+          Tests” button."
+      @renderNotification notification
+
+    phonologyServeCompiledFail: (error, phonologyId) ->
+      notification = new NotificationView
+        title: "Serve compiled fail"
+        content: "Your attempt to download the compiled binary file
+          representing phonology #{phonologyId} was unsuccessful: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    phonologyServeCompiledSuccess: (phonologyId) ->
+      notification = new NotificationView
+        title: "Serve compiled success"
+        content: "Your attempt to download the compiled binary file
+          representing phonology #{phonologyId} was successful: click
+          the link next to the button to download the file to your computer"
+      @renderNotification notification
+
+    morphologyGenerateAndCompileFail: (error, morphologyId) ->
+      notification = new NotificationView
+        title: "Morphology generate and compile failed"
+        content: "Your attempt to generate and compile morphology
+          #{morphologyId} failed: #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    morphologyCompileFail: (error, morphologyId) ->
+      notification = new NotificationView
+        title: "Morphology compile failed"
+        content: "Your attempt to compile morphology #{morphologyId} failed:
+          #{error}"
+        type: 'error'
+      @renderNotification notification
+
+    morphologyCompileSuccess: (message, morphologyId) ->
+      notification = new NotificationView
+        title: "Morphology compile success"
+        content: "Your attempt to compile morphology #{morphologyId} was
+          successful: #{message}"
       @renderNotification notification
 
     registerFail: (reason) ->

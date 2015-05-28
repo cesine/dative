@@ -50,6 +50,13 @@ define [
       title: @getTooltip()
       value: @getValue()
       label: @getLabel()
+      fieldDisplayLabelContainerClass: @fieldDisplayLabelContainerClass
+      fieldDisplayRepresentationContainerClass:
+        @fieldDisplayRepresentationContainerClass
+
+    fieldDisplayLabelContainerClass: 'dative-field-display-label-container'
+    fieldDisplayRepresentationContainerClass:
+      'dative-field-display-representation-container'
 
     # Return an array of model attributes that this field display "governs".
     # This defaults to `[@attribute]` but for field display views that govern
@@ -116,7 +123,7 @@ define [
     # context.
     shouldBeHidden: ->
       value = @context.value
-      if _.isDate(value) or _.isNumber(value)
+      if _.isDate(value) or _.isNumber(value) or _.isBoolean(value)
         false
       else if _.isEmpty(value) or @isValueless(value)
         true
