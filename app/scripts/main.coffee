@@ -61,13 +61,15 @@ require.config
 require [
     'views/app',
     'routes/router'
+    'underscore'
     'multiselect'
     'jqueryelastic'
     'jqueryuicolors'
     'tagit'
     'jqueryspin'
-  ], (AppView, Workspace) ->
+  ], (AppView, Workspace, _) ->
     window.debugMode = false
+    window._ = _
 
     $ ->
       app = new AppView()
@@ -75,4 +77,3 @@ require [
         app.close()
         window.location.href += window.location.hash
         window.location.reload()
-
