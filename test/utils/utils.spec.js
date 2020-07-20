@@ -4,7 +4,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 //###############################################################################
-// Unit tests for utils/utils.coffee
+// Unit tests for utils/utils.js
 //###############################################################################
 //
 // global beforeEach, describe, it, assert, expect

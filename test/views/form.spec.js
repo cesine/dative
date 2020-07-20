@@ -17,7 +17,7 @@ define(function(require) {
   // following error (which seems like a circular dependency thing ...)::
   //
   //     Uncaught TypeError: Cannot read property 'prototype' of undefined
-  //     (enterer-field-display.coffee:1)
+  //     (enterer-field-display.js:1)
 
   let formObjectWithHistory;
   const globals = require('../../../scripts/utils/globals');

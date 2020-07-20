@@ -57,7 +57,7 @@ define(function(require) {
 
       // Note that the `onerror` callback is NOT called with a 4/500 status code...
       // Here I make the response return invalid JSON. The _jsonify wrapper in
-      // base.coffee handles this by passing on the response body as is.
+      // base.js handles this by passing on the response body as is.
       msg = JSON.stringify({msg: 'failface'}).slice(0, +-3 + 1 || undefined);
       this.requests[this.requests.length - 1].respond(500,
         {"Content-Type": "application/json"},

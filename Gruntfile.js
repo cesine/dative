@@ -58,12 +58,12 @@ module.exports = function(grunt) {
         tasks: ['markdown:all']
       },
       coffee: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
         tasks: ['copy:coffee', 'coffee:serve']
       },
       coffeeTest: {
-        //files: ['test/spec/{,*/}*.coffee']
-        files: ['test/**/*.coffee'],
+        //files: ['test/spec/{,*/}*.js']
+        files: ['test/**/*.js'],
         tasks: ['coffee:test']
       },
       compass: {
@@ -98,8 +98,8 @@ module.exports = function(grunt) {
     },
 
     docco: {
-      src: ['.doctmp/*.coffee'],
-      //src: ['<%= yeoman.app %>/scripts/**/*.coffee']
+      src: ['.doctmp/*.js'],
+      //src: ['<%= yeoman.app %>/scripts/**/*.js']
       options: {
         output: 'docs/'
       }
@@ -196,10 +196,10 @@ module.exports = function(grunt) {
         },
         files: [{
           // rather than compiling multiple files here you should
-          // require them into your main .coffee file
+          // require them into your main .js file
           expand: true,
           cwd: '.tmp/scripts',
-          src: '**/*.coffee',
+          src: '**/*.js',
           dest: '.tmp/scripts',
           ext: '.js'
         }
@@ -211,10 +211,10 @@ module.exports = function(grunt) {
         },
         files: [{
           // rather than compiling multiple files here you should
-          // require them into your main .coffee file
+          // require them into your main .js file
           expand: true,
           cwd: '.tmp/scripts',
-          src: '**/*.coffee',
+          src: '**/*.js',
           dest: '.tmp/scripts',
           ext: '.js'
         }
@@ -225,8 +225,8 @@ module.exports = function(grunt) {
           expand: true,
           //cwd: 'test/spec' # original
           cwd: 'test',
-          //src: '{,*/}*.coffee' # original
-          src: '**/*.coffee',
+          //src: '{,*/}*.js' # original
+          src: '**/*.js',
           dest: '.tmp/spec', // original
           //dest: '.tmp'
           ext: '.js'
@@ -235,35 +235,33 @@ module.exports = function(grunt) {
       }
     },
 
-    // see http://brianflove.com/2014/04/18/web-development-automation-gruntfile-using-coffeescript/
-    // see https://www.npmjs.org/package/grunt-coffeelint
-    // see http://www.coffeelint.org/
-    coffeelint: {
+    // TODO
+    eslint: {
       app: {
-        src: '<%= yeoman.app %>/scripts/**/*.coffee'
+        src: '<%= yeoman.app %>/scripts/**/*.js'
       },
       options: {
-        no_tabs: {
-          level: 'error'
-        },
-        indentation: {
-          level: 'ignore'
-        }, // Unfortunately, coffeelint and requirejs's define callbacks don't play well together
-        no_trailing_whitespace: {
-          level: 'error'
-        },
-        no_trailing_semicolons: {
-          level: 'error'
-        },
-        no_plusplus: {
-          level: 'warn'
-        },
-        no_implicit_parens: {
-          level: 'ignore'
-        }, // change to 'warn' to warn about this
-        max_line_length: {
-          level: 'ignore'
-        }
+        // no_tabs: {
+        //   level: 'error'
+        // },
+        // indentation: {
+        //   level: 'ignore'
+        // }, // Unfortunately, eslint and requirejs's define callbacks don't play well together
+        // no_trailing_whitespace: {
+        //   level: 'error'
+        // },
+        // no_trailing_semicolons: {
+        //   level: 'error'
+        // },
+        // no_plusplus: {
+        //   level: 'warn'
+        // },
+        // no_implicit_parens: {
+        //   level: 'ignore'
+        // }, // change to 'warn' to warn about this
+        // max_line_length: {
+        //   level: 'ignore'
+        // }
       }
     },
 
@@ -444,7 +442,7 @@ module.exports = function(grunt) {
           dot: true,
           cwd: '<%= yeoman.app %>/scripts',
           dest: '.tmp/scripts',
-          src: '**/*.coffee'
+          src: '**/*.js'
         }
         ]
       },
@@ -531,7 +529,7 @@ module.exports = function(grunt) {
         files: [{
             expand: true,
             cwd: '<%= yeoman.app %>/scripts/', // src/modules/'
-            src: ['**/*.coffee'],
+            src: ['**/*.js'],
             dest: '.doctmp/', // dev/js/'
             rename(dest, src) {
               return dest + src.replace(/\//g, '.');
@@ -540,7 +538,7 @@ module.exports = function(grunt) {
           , {
             expand: true,
             cwd: 'test/',
-            src: ['!bower_components/*.coffee', '**/*.coffee'],
+            src: ['!bower_components/*.js', '**/*.js'],
             dest: '.doctmp/',
             rename(dest, src) {
               return dest + 'test.' + src.replace(/\//g, '.');
@@ -715,11 +713,11 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'markdown:all',
     'clean:dist', // remove everything in dist/ and .tmp/
-    'copy:coffee', // copy all .coffee files in app/scripts/ to .tmp/scripts/
+    'copy:coffee', // copy all .js files in app/scripts/ to .tmp/scripts/
     'copy:packagejson',
     'copy:unicodedatajson',
     'copy:serversjson',
-    'coffee:dist', // convert all .coffee files in .tmp/scripts to .js in situ
+    'coffee:dist', // convert all .js files in .tmp/scripts to .js in situ
 
     // eco: convert all .eco files in app/scripts/templates/ to .js files in
     // .tmp/scripts/templates/
@@ -795,7 +793,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['jshint', 'test', 'build']);
 
-  grunt.registerTask('lint', 'coffeelint');
+  grunt.registerTask('lint', 'eslint');
 
   grunt.registerTask('docs', ['clean:docs', 'clean:doctmp', 'copy:docco', 'docco', 'clean:doctmp']);
 
